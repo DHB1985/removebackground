@@ -33,7 +33,7 @@ Type: Post
 URL: http://127.0.0.1:5000/removebackground
 ```
 
-###Body
+### Body
 
 ```bash
 {
