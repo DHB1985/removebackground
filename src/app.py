@@ -70,5 +70,9 @@ def process_img():
   except Exception as e:
     return jsonify({"error": str(e)}), 400
 
+@app.route('/status', methods=['GET'])
+def get_status():
+  return jsonify({"status": 'ok'}), 200
+
 if __name__ == '__main__':
   app.run(use_reloader=True, host='0.0.0.0')
