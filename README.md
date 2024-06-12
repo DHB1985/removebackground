@@ -37,8 +37,6 @@ URL: http://127.0.0.1:5000/removebackground
 
 ```bash
 {
-  dni: string,
-  gender: string,
   image: base64Image
 }
 ```
@@ -76,7 +74,12 @@ const data = {
   gender: string,
   image: base64Image
 };
-response = axios.post('http://127.0.0.1:5000/upload', data)
+const headers = {
+  headers: { 
+    'apikey': 'apykeyvalue'
+  }
+}
+response = axios.post('http://127.0.0.1:5000/upload', data, headers)
 ```
 
 ## License
