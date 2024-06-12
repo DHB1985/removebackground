@@ -38,12 +38,11 @@ def decorator_data(image):
     "imgSrc": img_str
   })
 
-@app.route('/upload', methods=['POST'])
+@app.route('/removebackground', methods=['POST'])
 def process_img():
   try:
 
     payload = request.get_json()
-    print("payload")
 
     data = {
       "dni": payload["dni"],
