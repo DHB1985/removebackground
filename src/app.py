@@ -1,15 +1,26 @@
+import io
+import os
+import base64
+from functools import wraps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from rembg import remove
 from PIL import Image
-import io
-import base64
 
 app = Flask(__name__)
 CORS(app)
 
-def renaper_validation(data, image_base64):
-  return data["renaper"]
+def apikey_required(f):
+  @wraps(f)
+  def decorator(*arg, **kwargs):
+    apikey = request.headers.get('apikey')
+    try:
+      if apikey and os.getenv('VALID_APIKEY') == apikey:
+        return f(*arg, **kwargs)
+      return jsonify({'message': 'Not ApiKey or invalid'}),401
+    except:
+      return jsonify({'message': 'Not ApiKey or invalid'}),401
+  return decorator
 
 def change_background(image):
   output = remove(image, bgcolor=[255,255,255,255])
@@ -38,41 +49,27 @@ def decorator_data(image):
     "imgSrc": img_str
   })
 
-@app.route('/removebackground', methods=['POST'])
-def process_img():
-  try:
-
-    payload = request.get_json()
-
-    data = {
-      "dni": payload["dni"],
-      "gender": payload["gender"],
-      "renaper": payload["renaper"]
-    }
-    image_base64 = payload["image"]
-
-    image_data = base64.b64decode(image_base64)
-
-    image = Image.open(io.BytesIO(image_data))
-
-    validation = renaper_validation(data, image_base64)
-
-    if validation == 'true':
-
-      processed_image = change_background(image)
-
-      response_data = decorator_data(processed_image)
-
-      return response_data, 200
-
-    return jsonify({"result": False}), 400
-    
-  except Exception as e:
-    return jsonify({"error": str(e)}), 400
-
 @app.route('/status', methods=['GET'])
+@apikey_required
 def get_status():
   return jsonify({"status": 'ok'}), 200
+
+@app.route('/removebackground', methods=['POST'])
+@apikey_required
+def process_img():
+  try:
+    payload = request.get_json()
+    image_base64 = payload["image"]
+    image_data = base64.b64decode(image_base64)
+    image = Image.open(io.BytesIO(image_data))
+
+    processed_image = change_background(image)
+    response_data = decorator_data(processed_image)
+
+    return response_data, 200
+
+  except Exception as e:
+    return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
   app.run(use_reloader=True, host='0.0.0.0')
