@@ -47,7 +47,7 @@ URL: http://127.0.0.1:5000/removebackground
 
 ```bash
 {
-  satus:200,
+  status:200,
   data: {
     imgSrc: base64Image,
     result:true
@@ -59,7 +59,7 @@ URL: http://127.0.0.1:5000/removebackground
 
 ```bash
 {
-  satus:400,
+  status:400,
   data: {
     result:false
   }
