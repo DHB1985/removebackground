@@ -6,6 +6,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from rembg import remove
 from PIL import Image
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -66,10 +69,15 @@ def process_img():
     processed_image = change_background(image)
     response_data = decorator_data(processed_image)
 
+    # Cerrar la imagen para liberar recursos
+    image.close()
+    processed_image.close()
+
     return response_data, 200
 
   except Exception as e:
     return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
-  app.run(use_reloader=True, host='0.0.0.0')
+  port = int(os.environ.get('PORT', 8080))  
+  app.run(use_reloader=True, host='0.0.0.0', port=port)
